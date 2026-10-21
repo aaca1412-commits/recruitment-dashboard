@@ -22,7 +22,7 @@ def load_data():
     df["未報到原因"] = df["未報到原因"].fillna("已報到/無須紀錄")
     df["體檢不合格原因"] = df["體檢不合格原因"].fillna("體檢合格/無須紀錄")
     df["總體結果"] = df.apply(
-        lambda row: "合格" if row.get("資審結果") == "合格" and row.get("體檢結果") == "合格" else "不合格",
+        lambda row: "合格" if row.get("資審結果") == "合格" and row.get("體檢結果") == "合格" and row.get("報到狀態") == "已報到"else "不合格",
         axis=1
     )
     return df
