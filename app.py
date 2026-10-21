@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from streamlit_gsheets import GSheetsConnection
 
 # 1. 頁面基本配置
 st.set_page_config(
@@ -14,12 +15,14 @@ st.markdown("提供即時招募數據監控、合格率計算與多維度探索�
 st.divider()
 
 # 2. 載入資料與快取機制 (st.cache_data)
-@st.cache_data
+@st.cache_data(ttl=600)
 def load_data():
-    df = pd.read_csv("recruitment_data.csv")
+    conn = st.connection("gsheets", type=GSheetsConnection)
+    df = conn.read(worksheet="工作表1")
     df["未報到原因"] = df["未報到原因"].fillna("已報到/無須紀錄")
+    df["體檢不合格原因"] = df["體檢不合格原因"].fillna("體檢合格/無須紀錄")
     df["總體結果"] = df.apply(
-        lambda row: "合格" if row["體檢結果"] == "合格" and row["智力測驗"] == "合格" else "不合格",
+        lambda row: "合格" if row.get("資審結果") == "合格" and row.get("體檢結果") == "合格" else "不合格",
         axis=1
     )
     return df
