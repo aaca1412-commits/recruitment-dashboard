@@ -131,8 +131,45 @@ with row2_col2:
     else:
         st.info("目前無未報到資料")
 
+row3_col1, row3_col2 = st.columns(2)
+
+with row3_col1:
+    # 篩選資審不合格的人員進行原因分析
+    unqualified_review = filtered_df[filtered_df["資審結果"] == "不合格"]
+    if len(unqualified_review) > 0 and "資審不合格原因" in unqualified_review.columns:
+        review_reason_counts = unqualified_review["資審不合格原因"].value_counts().reset_index()
+        review_reason_counts.columns = ["資審不合格原因", "人數"]
+        fig_review = px.pie(
+            review_reason_counts,
+            names="資審不合格原因",
+            values="人數",
+            title="🚫 資審不合格原因結構分析",
+            hole=0.4
+        )
+        st.plotly_chart(fig_review, use_container_width=True)
+    else:
+        st.info("目前篩選條件下無「資審不合格」資料或欄位")
+
+with row3_col2:
+    # 篩選體檢不合格的人員進行原因分析
+    unqualified_medical = filtered_df[filtered_df["體檢結果"] == "不合格"]
+    if len(unqualified_medical) > 0:
+        med_reason_counts = unqualified_medical["體檢不合格原因"].value_counts().reset_index()
+        med_reason_counts.columns = ["體檢不合格原因", "人數"]
+        fig_medical = px.bar(
+            med_reason_counts,
+            x="體檢不合格原因",
+            y="人數",
+            title="🏥 體檢不合格原因統計",
+            color="體檢不合格原因",
+            text_auto=True
+        )
+        st.plotly_chart(fig_medical, use_container_width=True)
+    else:
+        st.info("目前篩選條件下無「體檢不合格」資料")
+
 st.divider()
 
 # 6. 招募清單明細 (st.dataframe)
-st.subheader("📋 招募測試資料明細")
+st.subheader("📋 報考人員資料明細")
 st.dataframe(filtered_df, use_container_width=True)
