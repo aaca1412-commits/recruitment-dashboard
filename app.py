@@ -92,7 +92,7 @@ with row1_col2:
         result_counts,
         names="總體結果",
         values="人數",
-        title="綜合測驗合格 / 不合格比例",
+        title="年度招募合格 / 不合格比例",
         color="總體結果",
         color_discrete_map={"合格": "#2ca02c", "不合格": "#d62728"},
         hole=0.4
