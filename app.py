@@ -44,6 +44,28 @@ selected_source = st.sidebar.multiselect(
     default=df["招獲來源"].unique()
 )
 
+if "招募人員" in df.columns:
+    selected_recruiter = st.sidebar.multiselect(
+        "選擇招募人員",
+        options=df["招募人員"].unique(),
+        default=df["招募人員"].unique()
+    )
+else:
+    selected_recruiter = []
+
+# 根據側邊欄條件過濾資料
+if "招募人員" in df.columns and len(selected_recruiter) > 0:
+    filtered_df = df[
+        (df["班隊類別"].isin(selected_team)) & 
+        (df["招獲來源"].isin(selected_source)) &
+        (df["招募人員"].isin(selected_recruiter))
+    ]
+else:
+    filtered_df = df[
+        (df["班隊類別"].isin(selected_team)) & 
+        (df["招獲來源"].isin(selected_source))
+    ]
+    
 # 根據側邊欄條件過濾資料
 filtered_df = df[
     (df["班隊類別"].isin(selected_team)) & 
@@ -167,6 +189,32 @@ with row3_col2:
         st.plotly_chart(fig_medical, use_container_width=True)
     else:
         st.info("目前篩選條件下無「體檢不合格」資料")
+
+st.subheader("👥 各招募人員招募成效比較")
+
+if "招募人員" in filtered_df.columns and not filtered_df.empty:
+    # 統計每個招募人員的總人數與合格人數
+    recruiter_stats = filtered_df.groupby("招募人員").agg(
+        總報名人數=("姓名", "count"),
+        合格人數=("總體結果", lambda x: (x == "合格").sum())
+    ).reset_index()
+    
+    # 計算個人合格率
+    recruiter_stats["合格率(%)"] = (recruiter_stats["合格人數"] / recruiter_stats["總報名人數"] * 100).round(1)
+    
+    # 畫出雙指標對比長條圖
+    fig_recruiter = px.bar(
+        recruiter_stats,
+        x="招募人員",
+        y=["總報名人數", "合格人數"],
+        barmode="group",
+        title="各招募人員招募績效對比",
+        text_auto=True,
+        labels={"value": "人數", "variable": "指標"}
+    )
+    st.plotly_chart(fig_recruiter, use_container_width=True)
+else:
+    st.info("目前無招募人員資料可供比較")
 
 st.divider()
 
