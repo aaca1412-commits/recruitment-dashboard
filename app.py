@@ -66,11 +66,6 @@ else:
         (df["招獲來源"].isin(selected_source))
     ]
     
-# 根據側邊欄條件過濾資料
-filtered_df = df[
-    (df["班隊類別"].isin(selected_team)) & 
-    (df["招獲來源"].isin(selected_source))
-]
 
 # 4. 關鍵指標卡片 (KPI Cards)
 st.subheader("📊 關鍵招募指標 (KPIs)")
