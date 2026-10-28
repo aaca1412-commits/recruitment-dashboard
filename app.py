@@ -189,7 +189,8 @@ with row3_col2:
         st.plotly_chart(fig_medical, use_container_width=True)
     else:
         st.info("目前篩選條件下無「體檢不合格」資料")
-
+        
+st.divider()
 st.subheader("👥 各招募人員招募成效比較")
 
 if "招募人員" in filtered_df.columns and not filtered_df.empty:
